@@ -12,84 +12,6 @@ servers:
         default: https
 
 paths:
-  '/optical-plug/{id}/photos':
-    get:
-      tags:
-        - Get Photo's Metadata
-      summary: Get Photos metadatas for a given pto (ReferencePrise)
-      operationId: getPhotosByPto
-      parameters:
-        - name: id
-          in: path
-          description: Pto identifier
-          required: true
-          schema:
-            type: string
-        - name: Authorization
-          in: header
-          description: >-
-            Credentials to authenticate an operator, it is a token
-            with scheme Negotiate.
-          required: false
-          schema:
-            type: string
-        - name: X-Request-Id
-          in: header
-          description: >-
-            Unique identifier of the request (uuid type recommended).
-          required: true
-          schema:
-            type: string
-            minLength: 0
-            maxLength: 36
-        - name: X-Client-Id
-          in: header
-          description: Building Operator Id
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Get Metadata Ok
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Photo'
-          links:
-            GetPhotoById:
-              $ref: '#/components/links/GetPhotoById'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Not Authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Resource not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
   '/access/{id}/photos':
     get:
       tags:
@@ -138,6 +60,10 @@ paths:
           links:
             GetPhotoById:
               $ref: '#/components/links/GetPhotoById'
+        '202':
+          description: Photo not yet available
+        '204':
+          description: Photo will never be available
         '400':
           description: Bad Request
           content:
@@ -217,6 +143,10 @@ paths:
           links:
             GetPhotoById:
               $ref: '#/components/links/GetPhotoById'
+        '202':
+          description: Photo not yet available
+        '204':
+          description: Photo will never be available
         '400':
           description: Bad Request
           content:
@@ -296,6 +226,10 @@ paths:
           links:
             GetPhotoById:
               $ref: '#/components/links/GetPhotoById'
+        '202':
+          description: Photo not yet available
+        '204':
+          description: Photo will never be available
         '400':
           description: Bad Request
           content:
@@ -452,20 +386,57 @@ components:
         type:
           type: string
           description: the interop type of the Photo (Pb/Pto before/after)
+          enum:
+            - PTO
+            - PBO_AVANT
+            - PBO_APRES
+            - PM_AVANT
+            - PM_APRES
+            - PT_PENETRATION_LGT
+            - AERIEN_CABLE_TRAVERSE
+            - AERIEN_CABLE_POTEAU
         mimeType:
           type: string
           enum:
             - image/png
             - image/jpeg
         width:
-            type: integer
-            description: the width of the Photo in pixels
+          type: integer
+          description: the width of the Photo in pixels
         height:
-            type: integer
-            description: the height of the Photo in pixels
+          type: integer
+          description: the height of the Photo in pixels
         size:
-            type: integer
-            description: the size of the Photo in bytes
+          type: integer
+          description: the size of the Photo in bytes
+        geoPositionCoords:
+          $ref: '#/components/schemas/GeoPositionCoords'
+    GeoPositionCoords:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+      discriminator:
+        propertyName: type
+    CartesianCoords:
+      allOf:
+        - $ref: '#/components/schemas/GeoPositionCoords'
+        - type: object
+          required:
+            - latitude
+            - longitude
+            - projection
+          properties:
+            latitude:
+              type: number
+              format: double
+            longitude:
+              type: number
+              format: double
+            projection:
+              type: string
   links:
     GetPhotoById:
       operationId: getPhoto
