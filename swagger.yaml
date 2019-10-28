@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.1.0'
+  version: '1.2.0'
   title: Get CRI Photos
 
 servers:
@@ -409,7 +409,9 @@ components:
         size:
           type: integer
           description: the size of the Photo in bytes
-        GeoPositionCoords:
+        geoPositionCoords:
+            $ref: '#/components/schemas/GeoPositionCoords'
+    GeoPositionCoords:
           allOf:
             - type: object
               required:
