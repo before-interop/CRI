@@ -412,21 +412,20 @@ components:
         geoPositionCoords:
             $ref: '#/components/schemas/GeoPositionCoords'
     GeoPositionCoords:
-          allOf:
-            - type: object
-              required:
-                - latitude
-                - longitude
-                - projection
-              properties:
-                latitude:
-                  type: number
-                  format: double
-                longitude:
-                  type: number
-                  format: double
-                projection:
-                  type: string
+      type: object
+      required:
+        - latitude
+        - longitude
+        - projection
+      properties:
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        projection:
+          type: string 
   links:
     GetPhotoById:
       operationId: getPhoto
