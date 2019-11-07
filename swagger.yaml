@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.0.0'
+  version: '1.2.0'
   title: Get CRI Photos
 
 servers:
@@ -21,7 +21,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: Pto identifier
+          description: Infrastructure Operator Internal Reference (RefPrestationPrise)
           required: true
           schema:
             type: string
@@ -410,33 +410,22 @@ components:
           type: integer
           description: the size of the Photo in bytes
         geoPositionCoords:
-          $ref: '#/components/schemas/GeoPositionCoords'
+            $ref: '#/components/schemas/GeoPositionCoords'
     GeoPositionCoords:
       type: object
       required:
-        - type
+        - latitude
+        - longitude
+        - projection
       properties:
-        type:
-          type: string
-      discriminator:
-        propertyName: type
-    CartesianCoords:
-      allOf:
-        - $ref: '#/components/schemas/GeoPositionCoords'
-        - type: object
-          required:
-            - latitude
-            - longitude
-            - projection
-          properties:
-            latitude:
-              type: number
-              format: double
-            longitude:
-              type: number
-              format: double
-            projection:
-              type: string
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        projection:
+          type: string 
   links:
     GetPhotoById:
       operationId: getPhoto
