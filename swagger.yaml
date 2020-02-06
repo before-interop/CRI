@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.1.0'
+  version: '1.2.0'
   title: Get CRI Photos
 
 servers:
@@ -12,17 +12,29 @@ servers:
         default: https
 
 paths:
-  '/access/{id}/photos':
+  '/photos/':
     get:
       tags:
-        - Get Photo's Metadata
-      summary: Get Photos metadatas for a given access id (RefPrestationPrise)
-      operationId: getPhotosByAccess
+        - Get Photos Metadata
+      summary: Get Photos metadatas for a given access id (RefPrestationPrise) or id (ReferenceCommandeSousTraitantOI) or id (ReferenceCommandePriseInterneOc)
+      operationId: getPhotosMetadata
       parameters:
-        - name: id
-          in: path
+        - name: accessId
+          in: query
           description: Infrastructure Operator Internal Reference (RefPrestationPrise)
-          required: true
+          required: false
+          schema:
+            type: string
+        - name: orderId
+          in: query
+          description: Infrastructure Operator Internal Reference (ReferenceCommandePriseInterneOc)
+          required: false
+          schema:
+            type: string
+        - name: interventionId
+          in: query
+          description: Infrastructure Operator Internal Reference (ReferenceCommandeSousTraitantOI)
+          required: false
           schema:
             type: string
         - name: Authorization
@@ -95,178 +107,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  '/order/{internalReference}/photos':
-    get:
-      tags:
-        - Get Photo's Metadata
-      summary: Get Photos metadatas for a given order
-      operationId: getPhotosByOrder
-      parameters:
-        - name: internalReference
-          in: path
-          description: Commercial Operator Internal Reference (ReferenceCommandePriseInterneOc)
-          required: true
-          schema:
-            type: string
-        - name: Authorization
-          in: header
-          description: >-
-            Credentials to authenticate an operator, it is a token
-            with scheme Negotiate.
-          required: false
-          schema:
-            type: string
-        - name: X-Request-Id
-          in: header
-          description: >-
-            Unique identifier of the request (uuid type recommended).
-          required: true
-          schema:
-            type: string
-            minLength: 0
-            maxLength: 36
-        - name: X-Client-Id
-          in: header
-          description: Building Operator Id
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Get Metadata Ok
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Photo'
-          links:
-            GetPhotoById:
-              $ref: '#/components/links/GetPhotoById'
-        '202':
-          description: Photo not yet available
-        '204':
-          description: Photo will never be available
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Not Authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Resource not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  '/intervention/{id}/photos':
-    get:
-      tags:
-        - Get Photo's Metadata
-      summary: Get Photos metadatas for a given itervention
-      operationId: getPhotosByIntervention
-      parameters:
-        - name: id
-          in: path
-          description: Intervention id (ReferenceCommandeSousTraitantOI)
-          required: true
-          schema:
-            type: string
-        - name: Authorization
-          in: header
-          description: >-
-            Credentials to authenticate an operator, it is a token
-            with scheme Negotiate.
-          required: false
-          schema:
-            type: string
-        - name: X-Request-Id
-          in: header
-          description: >-
-            Unique identifier of the request (uuid type recommended).
-          required: true
-          schema:
-            type: string
-            minLength: 0
-            maxLength: 36
-        - name: X-Client-Id
-          in: header
-          description: Building Operator Id
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Get Metadata Ok
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Photo'
-          links:
-            GetPhotoById:
-              $ref: '#/components/links/GetPhotoById'
-        '202':
-          description: Photo not yet available
-        '204':
-          description: Photo will never be available
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Not Authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Resource not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-                
-
-  '/photo/{id}':
+ 
+  '/photos/{id}':
     get:
       tags:
         - Get Photo
-      summary: Get Photo
+      summary: Get Photo in jpeg or png format
       operationId: getPhoto
       parameters:
         - name: id
@@ -364,7 +210,6 @@ components:
         - id
         - type
         - mimeType
-        - url
       properties:
         id:
           type: string
@@ -431,4 +276,4 @@ components:
       operationId: getPhoto
       parameters:
         id: '$response.body#/photos/0/id'
-      description: The `id` value returned in the response can be used as the `id` parameter in `GET /photo/{id}`.
+      description: The `id` value returned in the response can be used as the `id` parameter in `GET /photos/{id}`.
