@@ -364,7 +364,6 @@ components:
         - id
         - type
         - mimeType
-        - url
       properties:
         id:
           type: string
